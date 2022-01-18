@@ -27,7 +27,7 @@ public handler LogNSObjectClassName(in tNSObj as optional ObjcId)
    variable tStr as optional String
    if tNSObj is not nothing then
    unsafe
-      put objC_NSObjectClassName(tNSObj) into tNSStrObj
+      put NSObjectClassName(tNSObj) into tNSStrObj
       put StringFromNSString(tNSStrObj) into tStr
       log tStr
    end unsafe
@@ -42,7 +42,7 @@ public handler GetNSObjectClassName(in tNSObj as optional ObjcId) returns option
    variable tStr as optional String
    if tNSObj is not nothing then
    unsafe
-      put objC_NSObjectClassName(tNSObj) into tNSStrObj
+      put NSObjectClassName(tNSObj) into tNSStrObj
       put StringFromNSString(tNSStrObj) into tStr
       return tStr
    end unsafe
@@ -51,106 +51,185 @@ public handler GetNSObjectClassName(in tNSObj as optional ObjcId) returns option
    end if
 end handler
 
+
+
+
+
+-------------------- Type Declarations -------------------------------
 public foreign type CGSize binds to "MCAggregateTypeInfo:qq"
 public foreign type NSRect binds to "MCAggregateTypeInfo:qqqq"
 public foreign type CGImageRef binds to "MCAggregateTypeInfo:r"
 public foreign type CGPoint binds to "MCAggregateTypeInfo:qq"
 
 private variable sMyWindow as optional ObjcObject
-private variable mNSVisualEffectView as optional ObjcObject
-private variable mPDFDocument as optional ObjcObject
-private variable mNSVisualEffectViewProxy as optional ObjcObject
 private variable sMyWindowController as optional ObjcObject
+
+private variable mNSVisualEffectView as optional ObjcObject
+private variable mDocument as optional ObjcObject
+private variable mNSVisualEffectViewProxy as optional ObjcObject
 private variable sNSVisualEffectViewController as optional ObjcObject
 
+
+
+
+------- foreign handlers ----------------------------------------------------------------------------------------------------------------------------------
+
 -------------------------------------------------------------- NSApplication ------------------------------------------------------------------------------
-private foreign handler ObjC_NSApplicationSharedApplication() returns ObjcId binds to "objc:NSApplication.+sharedApplication"
-private foreign handler ObjC_NSAppWindowWithWindowNumber(in pObj as ObjcId, in pWindowNumber as CLong) returns ObjcId binds to "objc:NSApplication.-windowWithWindowNumber:"
--------------------------------------------------------------- NSURL ------------------------------------------------------------------------------
-private foreign handler objC_NSURLURLWithString(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.+URLWithString:"
-private foreign handler objC_NSURLfileOrDirURLWithPath(in pPathString as ObjcId, in pIsDir as CBool) returns ObjcId binds to "objc:.NSURL.+fileURLWithPath:isDirectory:"
-private foreign handler objC_NSURLfileURLWithPath(in pPathString as ObjcId) returns ObjcId binds to "objc:NSURL.+fileURLWithPath:"
-private foreign handler objC_NSURLGetAbsoluteString(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.absoluteString"
-private foreign handler objC_NSURLGetPath(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.path"
------------------------------------------------------------- NSBundle ------------------------------------------------------------------------------
-private foreign handler ObjC_NSBundleWithURL(in pNSURL as ObjcId) returns ObjcId binds to "objc:NSBundle.+bundleWithURL:"
-private foreign handler ObjC_NSBundleGetClassNamed(in pNSbundle as ObjcId,in pClassNameNSString as ObjcId) returns ObjcId binds to "objc:NSBundle.-classNamed:"
------------------------------------------------------------- NSArray / NSMutableArray ------------------------------------------------------------------------------
-private foreign handler objC_NSMutableArrayAlloc() returns ObjcRetainedId binds to "objc:NSMutableArray.+alloc"
-private foreign handler objC_NSMutableArrayInitWithCapacity(in pNSMutableArray as ObjcId, in pCapacity as NaturalFloat) returns ObjcId binds to "objc:NSMutableArray.-initWithCapacity:"
-private foreign handler objC_NSMutableArrayInitWithNSArray(in pNSMutableArray as ObjcId, in pNSArray as ObjcId) returns ObjcId binds to "objc:NSMutableArray.-initWithArray:"
--------------------------------------------------------------- NSImage ------------------------------------------------------------------------------
-private foreign handler ObjC_NSImageAlloc() returns ObjcRetainedId binds to "objc:NSImage.+alloc"
-private foreign handler ObjC_NSImageInitWithData(in pObj as ObjcRetainedId, in pData as ObjcId) returns optional ObjcRetainedId binds to "objc:NSImage.-initWithData:"
-private foreign handler ObjC_NSImageInitWithContentsOfFile(in pObj as ObjcRetainedId, in pFilename as ObjcId) returns optional ObjcRetainedId binds to "objc:NSImage.-initWithContentsOfFile:"
-private foreign handler ObjC_NSImageSetTemplate(in pObj as ObjcId, in pTemplate as CBool) returns nothing binds to "objc:NSImage.-setTemplate:"
--------------------------------------------------------------- NSWindow ------------------------------------------------------------------------------
-private foreign handler ObjC_NSWindowAlloc() returns ObjcRetainedId binds to "objc:NSWindow.+alloc"
-private foreign handler ObjC_NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) \
-                                                       returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
---private foreign handler ObjC_NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
-private foreign handler ObjC_NSWindowSetTitle(in pObj as ObjcId, in pTitleNSStr as ObjcId) returns nothing binds to "objc:NSWindow.-setTitle:"
-private foreign handler ObjC_NSWindowGetStyleMask(in pObj as ObjcId) returns CLong binds to "objc:NSWindow.-styleMask"
-private foreign handler ObjC_NSWindowSetStyleMask(in pObj as ObjcId, in pOptions as CInt) returns nothing binds to "objc:NSWindow.-setStyleMask:"
-private foreign handler ObjC_NSWindowSetLevel(in pObj as ObjcId, in pLevel as CInt) returns nothing binds to "objc:NSWindow.-setLevel:"
-private foreign handler ObjC_NSWindowGetLevel(in pObj as ObjcId) returns CInt binds to "objc:NSWindow.-level"
-private foreign handler ObjC_NSWindowGetReleasedWhenClosed(in pObj as ObjcId) returns CBool binds to "objc:NSWindow.isReleasedWhenClosed"
-private foreign handler ObjC_NSWindowCreateWithViewController(in pNSViewController as ObjcId) returns ObjcRetainedId binds to "objc:NSWindow.+windowWithContentViewController:"
-private foreign handler ObjC_NSWindowDealloc(in pNSViewController as ObjcId) returns nothing binds to "objc:NSWindow.-dealloc"
-private foreign handler ObjC_NSWindowSetContentView(in pNSWindow as ObjcId, in pNSView as ObjcId) returns nothing binds to "objc:NSWindow.-setContentView:"
-private foreign handler ObjC_NSWindowSetBoolValueForKey( in pNSWindow as ObjcId, in pValue as CBool, in pSelector as ObjcId) returns nothing binds to "objc:NSWindow.-setValue:forKey:"
--- private foreign handler ObjC_NSWindowSetTitlebarTransparent(in pObj as ObjcId, in pBool as CBool) returns nothing binds to "objc:NSWindow.titlebarAppearsTransparent"
--------------------------------------------------------------- NSWindowController ------------------------------------------------------------------------------
-private foreign handler ObjC_NSWindowControllerAlloc() returns ObjcRetainedId binds to "objc:NSWindowController.+alloc"
-private foreign handler ObjC_NSWindowControllerDealloc(in pObj as ObjcId) returns nothing binds to "objc:NSWindowController.-dealloc"
-private foreign handler ObjC_NSWindowControllerInitWithWindow(in pObj as ObjcRetainedId,in pNSWindow as ObjcRetainedId) returns ObjcId binds to "objc:NSWindowController.-initWithWindow:"
---private foreign handler ObjC_NSWindowControllerInitWithWindow(in pObj as ObjcId,in pNSWindow as ObjcId) returns ObjcId binds to "objc:NSWindowController.-initWithWindow:"
-private foreign handler ObjC_NSWindowControllerShowWindow(in pObj as ObjcId,in pNSWindow as ObjcId) returns nothing binds to "objc:NSWindowController.-showWindow:"
-private foreign handler ObjC_NSWindowControllerClose(in pNSWindowController as ObjcId) returns nothing binds to "objc:NSWindowController.-close"
-private foreign handler ObjC_NSWindowSetContentViewController(in pObj as ObjcId, in pViewController as ObjcId) returns nothing binds to "objc:NSWindow.-setContentView:"
-private foreign handler ObjC_NSWindowGetContentViewController(in pObj as ObjcId) returns ObjcId binds to "objc:NSWindow.-contentViewController"
--------------------------------------------------------------- NSView ------------------------------------------------------------------------------
-private foreign handler ObjC_NSViewControllerAlloc() returns ObjcRetainedId binds to "objc:NSViewController.+alloc"
-private foreign handler ObjC_NSViewControllerDealloc(in pObj as ObjcId) returns nothing binds to "objc:NSViewController.-dealloc"
-
------------------------------------------- General Objtive C Cocoa / Foundation Bindings ------------------------------------------------------------------------------
-private foreign handler objC_NSObjectRetain(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.-retain"
-private foreign handler objC_NSObjectAutoRealease(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.-autorelease"
-private foreign handler objC_NSObjectRelease(in pNSObj as ObjcId) returns nothing binds to "objc:NSObject.-release"
-private foreign handler objC_NSObjectDescription(in pNSObj as optional ObjcId) returns ObjcId binds to "objc:NSObject.description"
-private foreign handler objC_NSObjectClassName(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.className"
-private foreign handler objC_NSObjectGetSuperClass(in pNSObj as ObjcId) returns ObjcRetainedId binds to "c:NObject.+superclass:"
-private foreign handler c_NSClassFromString(in pClassNameString as ObjcId) returns ObjcId binds to "c:NSClassFromString"
-private foreign handler objC_NSErrorAlloc() returns ObjcId binds to "objc:NSError.+alloc"
-private foreign handler c_CFErrorCopyDescription(in pCFErrorRef as ObjcId) returns ObjcId binds to "c:CFErrorCopyDescription"
-
--------------------------------------------------------------------------------------------  Apple EffectView Bindings ----------------------------------------------------------------------------------------
-private foreign handler objC_AppleNSEffectViewAlloc() returns ObjcId binds to "objc:NSVisualEffectView.+alloc"
-private foreign handler objC_AppleEffectViewNSVisualEffectViewInit(in pNSVisualEffectView as ObjcRetainedId) returns ObjcRetainedId binds to "objc:NSVisualEffectView.-init"
--- private foreign handler objC_AppleEffectViewPDFSetDocument(in pNSVisualEffectView as ObjcId, in pPDFDocument as ObjcId) returns nothing binds to "objc:objc:NSVisualEffectView.-document:"
-private foreign handler objC_AppleEffectViewNSVisualEffectViewSetValueForKey(in pPDFDocument as ObjcId, in pValue as ObjcId, in pSelector as ObjcId) returns nothing binds to "objc:NSVisualEffectView.-setValue:forKey:"
-private foreign handler objC_AppleEffectViewNSVisualEffectViewSetBoolValueForKey(in pPDFDocument as ObjcId, in pValue as CBool, in pSelector as ObjcId) returns nothing binds to "objc:NSVisualEffectView.-setValue:forKey:"
-
-private foreign handler objC_AppleEffectViewPDFDocumentAlloc() returns ObjcRetainedId binds to "objc:PDFDocument.+alloc"
-private foreign handler objC_AppleEffectViewPDFDocumentInitFromURL(in pPDFDocument as ObjcRetainedId, in pNSURL as ObjcId) returns ObjcRetainedId binds to "objc:PDFDocument.-initWithURL:"
---private foreign handler objC_AppleEffectViewPDFDocumentGetPageCount(in pPDFDocument as ObjcId) returns ObjcId binds to "objc:PDFDocument.pageCount"
-private foreign handler objC_AppleEffectViewPDFDocumentValueForKey(in pPDFDocument as ObjcId, in pSelector as ObjcId) returns ObjcId binds to "objc:PDFDocument.-valueForKey:"
-
-
-private foreign handler ObjC_NSApplicationGetTargetForAction(in pNSApp as ObjcId, in pSelectorNSStr as ObjcId ) returns ObjcId binds to "objc:NSApplication.-targetForAction:"
+private foreign handler NSApplicationSharedApplication() returns ObjcId binds to "objc:NSApplication.+sharedApplication"
+private foreign handler NSApplicationRequestUserAttention(in sharedApplication as ObjcId, in requestType as CLong) returns CLong binds to "objc:NSApplication.-requestUserAttention:"
+private foreign handler NSApplicationMiniaturizeAll( in sharedApplication as optional ObjcId, in pSenderID as optional any) returns nothing binds to "objc:NSApplication.-miniaturizeAll:"
+private foreign handler NSApplicationHide ( in sharedApplication as ObjcId, in pSenderID as optional any) returns nothing binds to "objc:NSApplication.-hide:"
+private foreign handler NSApplicationUnhide ( in sharedApplication as ObjcId, in pSenderID as optional any) returns nothing binds to "objc:NSApplication.-unhide:"
+private foreign handler NSApplicationWindowWithWindowNumber(in pSharedApplication as ObjcId, in pWindowNumber as CLong) returns ObjcId binds to "objc:NSApplication.-windowWithWindowNumber:"
+private foreign handler NSApplicationGetNSDockTile(in sharedApplication as ObjcId) returns ObjcId binds to "objc:NSApplication.-dockTile"
+private foreign handler NSApplicationSetAppearance(in pNSWindow as ObjcId, in pAppearanceNameNSStr as ObjcId) returns nothing binds to "objc:NSApplication.-setAppearance:"
+private foreign handler NSAppWindowWithWindowNumber(in pObj as ObjcId, in pWindowNumber as CLong) returns ObjcId binds to "objc:NSApplication.-windowWithWindowNumber:"
+private foreign handler NSApplicationGetTargetForAction(in pNSApp as ObjcId, in pSelectorNSStr as ObjcId ) returns ObjcId binds to "objc:NSApplication.-targetForAction:"
 -- Returns the object that receives the action message specified by the given selector.
-private foreign handler ObjC_NSNotificationCenter() returns ObjcId binds to "objc:NSNotificationCenter.+defaultCenter"
-private foreign handler ObjC_NSNotificationCenterAddObserverForSelector( in pNotificationCenter as ObjcId, in pObserver as ObjcId, in pSelectorNSStr as optional ObjcId, \
+--private foreign handler NSApplicationSetAppIconImage(in sharedApplication as ObjcId, in iconImage as ObjcId) returns ObjcId binds to "objc:NSApplication.-setApplicationIconImage:" -- CHRASH!!!
+
+--------------------------------------------------------------   NSRunningApplication ----------------------------------------------------------------
+
+private foreign handler NSRunningApplicationBundleIdentifier(in pObj as ObjcId) returns optional ObjcId binds to "objc:NSRunningApplication.-bundleIdentifier"
+private foreign handler NSRunningApplicationProcessIdentifier(in pObj as ObjcId) returns CInt binds to "objc:NSRunningApplication.-processIdentifier"
+
+----------------------------------------------------------------------  NSWorkSpace  --------------------------------------------------------------------------
+
+private foreign handler NSWorkspaceSharedWorkspace() returns ObjcId binds to "objc:NSWorkspace.+sharedWorkspace"
+private foreign handler NSWorkspaceSelectFile(in pSharedWorkspace as ObjcId, in pFilename as ObjcId, in pRootedAtPath as ObjcId) returns CBool binds to "objc:NSWorkspace.-selectFile:inFileViewerRootedAtPath:"
+private foreign handler NSWorkspaceIsFilePackageAtPath(in pSharedWorkspace as ObjcId, in pFilename as ObjcId) returns CBool binds to "objc:NSWorkspace.-isFilePackageAtPath:"
+private foreign handler NSWorkspaceRunningApplications(in pSharedWorkspace as ObjcId) returns ObjcId binds to "objc:NSWorkspace.-runningApplications"
+private foreign handler NSWorkspaceLaunchApplication(in pSharedWorkspace as ObjcId, in pAppName as ObjcId) returns CBool binds to "objc:NSWorkspace.launchApplication:"
+private foreign handler NSWorkspaceFrontmostApplication(in pSharedWorkspace as ObjcId) returns ObjcId binds to "objc:NSWorkspace.-frontmostApplication"
+private foreign handler NSWorkspaceURLForAppBundleID(in pSharedWorkspace as ObjcId, in pBundleID as ObjcId ) returns ObjcId binds to "objc:NSWorkspace.-URLForApplicationWithBundleIdentifier:"
+
+--------------------------------------------------------------   Notifications ----------------------------------------------------------------
+
+private foreign handler NSNotificationCenter() returns ObjcId binds to "objc:NSNotificationCenter.+defaultCenter"
+private foreign handler NSNotificationCenterAddObserverForSelector( in pNotificationCenter as ObjcId, in pObserver as ObjcId, in pSelectorNSStr as optional ObjcId, \
                                           in pNameNSStr as optional ObjcId, in pSender as optional ObjcId) returns ObjcId binds to "objc:NSNotificationCenter.-addObserver:selector:name:object:"
-private foreign handler ObjC_NSNotificationCenterAddObserverForNameUsingBlock( in pNotificationCenter as ObjcId, in pObserverForNameNSStr as ObjcId, in pObject as optional ObjcId, \
+private foreign handler NSNotificationCenterAddObserverForNameUsingBlock( in pNotificationCenter as ObjcId, in pObserverForNameNSStr as ObjcId, in pObject as optional ObjcId, \
                                           in pQueue as optional ObjcId, in pBlock as ObjcBlockPointer) returns ObjcId binds to "objc:NSNotificationCenter.-addObserverForName:object:queue:usingBlock:"
---- private foreign handler ObjC_NSTextFieldSetTarget(in pObj as ObjcId, in pTarget as ObjcId) returns nothing binds to "objc:NSTextField.-setTarget:"
--- private foreign handler ObjC_NSTextFieldSetAction(in pObj as ObjcId, in pAction as UIntPtr) returns nothing binds to "objc:NSTextField.-setAction:"
+--- private foreign handler NSTextFieldSetTarget(in pObj as ObjcId, in pTarget as ObjcId) returns nothing binds to "objc:NSTextField.-setTarget:"
+-- private foreign handler NSTextFieldSetAction(in pObj as ObjcId, in pAction as UIntPtr) returns nothing binds to "objc:NSTextField.-setAction:"
 -- put ObjcProxyGetTarget(TextFieldActionCallback, nothing) into mTextFieldProxy
--- ObjC_NSTextFieldSetTarget(mTextFieldView, mTextFieldProxy)
--- ObjC_NSTextFieldSetAction(mTextFieldView, ObjcProxyGetAction())
+-- NSTextFieldSetTarget(mTextFieldView, mTextFieldProxy)
+-- NSTextFieldSetAction(mTextFieldView, ObjcProxyGetAction())
 -- private variable mTextFieldView as optional ObjcObject
 -- private variable mTextFieldProxy as optional ObjcObject
+private foreign handler NSUserNotificationCenterDefaultUserNotificationCenter() returns ObjcId binds to "objc:NSUserNotificationCenter.+defaultUserNotificationCenter"
+private foreign handler NSUserNotificationAlloc() returns ObjcRetainedId binds to "objc:NSUserNotification.+alloc"
+private foreign handler NSUserNotificationInit(in anInstance as ObjcId) returns ObjcId binds to "objc:NSUserNotification.-init"
+private foreign handler NSUserNotificationSetProperty(in Obj as ObjcId, in pValue as ObjcId, in pProp as ObjcId) returns nothing binds to "objc:NSUserNotification.-setValue:forKey:"
+private foreign handler NSUserNotificationCenterDeliverNotification(in defaultUserNotificationCenter as ObjcId, in aNotificationInstance as ObjcId) returns nothing binds to "objc:NSUserNotificationCenter.-deliverNotification:"
+
+private foreign handler NSDistributedNotificationCenterDefaultCenter() returns ObjcId binds to "objc:NSDistributedNotificationCenter.+defaultCenter"
+private foreign handler NSDistributedNotificationCenterPostNotificationNameObject(in defaultCenter as ObjcId, in notificationName as ObjcId, in notificationObject as ObjcId) returns nothing binds to "objc:NSDistributedNotificationCenter.-postNotificationName:object:"
+
+-------------------------------------------------------------- NSURL ------------------------------------------------------------------------------
+private foreign handler NSURLURLWithString(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.+URLWithString:"
+private foreign handler NSURLfileOrDirURLWithPath(in pPathString as ObjcId, in pIsDir as CBool) returns ObjcId binds to "objc:.NSURL.+fileURLWithPath:isDirectory:"
+private foreign handler NSURLfileURLWithPath(in pPathString as ObjcId) returns ObjcId binds to "objc:NSURL.+fileURLWithPath:"
+private foreign handler NSURLGetAbsoluteString(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.absoluteString"
+private foreign handler NSURLGetPath(in pURLString as ObjcId) returns ObjcId binds to "objc:NSURL.path"
+
+------------------------------------------------------------ NSBundle ------------------------------------------------------------------------------
+private foreign handler NSBundleWithURL(in pNSURL as ObjcId) returns ObjcId binds to "objc:NSBundle.+bundleWithURL:"
+private foreign handler NSBundleGetClassNamed(in pNSbundle as ObjcId,in pClassNameNSString as ObjcId) returns ObjcId binds to "objc:NSBundle.-classNamed:"
+
+------------------------------------------------------------ NSDockTile ------------------------------------------------------------------------------
+private foreign handler NSDockTileSetBadgeLabelProp(in pNSDockTile as ObjcId, in pNSString as ObjcId, in pSelectorNSString as ObjcId ) returns nothing binds to "objc:NSDockTile.-setValue:forKey:"
+private foreign handler NSDockTileSetShowAppBadge(in pNSDockTile as ObjcId, in pValue as cBool, in pSelectorNSString as ObjcId) returns nothing binds to "objc:NSDockTile.-setValue:forKey:"
+private foreign handler NSDockTileDisplay(in pNSDockTile as ObjcId) returns nothing binds to "objc:NSDockTile.-display"
+
+------------------------------------------------------------ NSArray / NSMutableArray ------------------------------------------------------------------------------
+private foreign handler NSMutableArrayAlloc() returns ObjcRetainedId binds to "objc:NSMutableArray.+alloc"
+private foreign handler NSMutableArrayInitWithCapacity(in pNSMutableArray as ObjcId, in pCapacity as NaturalFloat) returns ObjcId binds to "objc:NSMutableArray.-initWithCapacity:"
+private foreign handler NSMutableArrayInitWithNSArray(in pNSMutableArray as ObjcId, in pNSArray as ObjcId) returns ObjcId binds to "objc:NSMutableArray.-initWithArray:"
+
+-------------------------------------------------------------- NSImage ------------------------------------------------------------------------------
+private foreign handler NSImageAlloc() returns ObjcRetainedId binds to "objc:NSImage.+alloc"
+private foreign handler NSImageInitWithData(in pObj as ObjcRetainedId, in pData as ObjcId) returns optional ObjcRetainedId binds to "objc:NSImage.-initWithData:"
+private foreign handler NSImageInitWithContentsOfFile(in pObj as ObjcRetainedId, in pFilename as ObjcId) returns optional ObjcRetainedId binds to "objc:NSImage.-initWithContentsOfFile:"
+private foreign handler NSImageSetTemplate(in pObj as ObjcId, in pTemplate as CBool) returns nothing binds to "objc:NSImage.-setTemplate:"
+private foreign handler NSImageInitFromFile(in pPathNSString as ObjcId) returns ObjcId binds to "objc:NSImage.-initWithContentsOfFile:" -- correct!!!
+-------------------------------------------------------------- NSWindow ------------------------------------------------------------------------------
+private foreign handler NSWindowAlloc() returns ObjcRetainedId binds to "objc:NSWindow.+alloc"
+private foreign handler NSWindowDealloc(in pNSWindow as ObjcId) returns nothing binds to "objc:NSWindow.-dealloc"
+private foreign handler NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) \
+                                                       returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
+--private foreign handler NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
+private foreign handler NSWindowGetReleasedWhenClosed(in pNSWindow as ObjcId) returns CBool binds to "objc:NSWindow.isReleasedWhenClosed"
+
+private foreign handler NSWindowSetTitle(in pNSWindow as ObjcId, in pTitleNSStr as ObjcId) returns nothing binds to "objc:NSWindow.-setTitle:"
+private foreign handler NSWindowGetStyleMask(in pNSWindow as ObjcId) returns CLong binds to "objc:NSWindow.-styleMask"
+private foreign handler NSWindowSetStyleMask(in pNSWindow as ObjcId, in pOptions as CInt) returns nothing binds to "objc:NSWindow.-setStyleMask:"
+
+private foreign handler NSWindowSetLevel(in pNSWindow as ObjcId, in pLevel as CInt) returns nothing binds to "objc:NSWindow.-setLevel:"
+private foreign handler NSWindowGetLevel(in pNSWindow as ObjcId) returns CInt binds to "objc:NSWindow.-level"
+
+private foreign handler NSWindowCreateWithViewController(in pNSViewController as ObjcId) returns ObjcRetainedId binds to "objc:NSWindow.+windowWithContentViewController:"
+private foreign handler NSWindowSetContentView(in pNSWindow as ObjcId, in pNSView as ObjcId) returns nothing binds to "objc:NSWindow.-setContentView:"
+-- private foreign handler NSWindowSetTitlebarTransparent(in pObj as ObjcId, in pBool as CBool) returns nothing binds to "objc:NSWindow.titlebarAppearsTransparent"
+
+private foreign handler NSWindowSetValueForKey( in pNSWindow as ObjcId, in pValue as ObjcRetainedId, in pSelector as ObjcId) returns nothing binds to "objc:NSWindow.-setValue:forKey:"
+private foreign handler NSWindowSetBoolValueForKey( in pNSWindow as ObjcId, in pValue as CBool, in pSelector as ObjcId) returns nothing binds to "objc:NSWindow.-setValue:forKey:"
+
+private foreign handler NSWindowSetTitleVisibility(in pNSWindow as ObjcId, in pVisibleUnum as ObjcId) returns nothing binds to "objc:NSWindow.-setTitleVisibility:"
+private foreign handler NSWindowSetAppearance(in pNSWindow as ObjcId, in pAppearanceNameNSStr as ObjcId) returns nothing binds to "objc:NSWindow.-setAppearance:"
+private foreign handler NSWindowPerformMiniaturize(in pNSWindow as ObjcId, in pSenderID as optional any) returns nothing binds to "objc:NSWindow.-performMiniaturize:" -- (void)performMiniaturize:(id)sender;
+private foreign handler NSWindowDeminiaturize(in pNSWindow as ObjcId, in pSenderID as ObjcId) returns nothing binds to "objc:NSWindow.-deminiaturize:"
+private foreign handler NSWindowIsMiniaturized(in pNSWindow as ObjcId) returns CBool binds to "objc:NSWindow.isMiniaturized"
+private foreign handler NSWindowSetCollectionBehavior(in pNSWindow as ObjcId, in collectionBehavior as CLong) returns nothing binds to "objc:NSWindow.-setCollectionBehavior:"
+private foreign handler NSWindowGetCollectionBehavior(in pNSWindow as ObjcId) returns CLong binds to "objc:NSWindow.-collectionBehavior"
+private foreign handler NSWindowToggleFullScreen(in pNSWindow as optional ObjcId, in pSenderID as optional any) returns nothing binds to "objc:NSWindow.-toggleFullScreen:"
+
+private foreign handler NSWindowSetContentViewController(in pNSWindow as ObjcId, in pViewController as ObjcId) returns nothing binds to "objc:NSWindow.-setContentView:"
+private foreign handler NSWindowGetContentViewController(in pNSWindow as ObjcId) returns ObjcId binds to "objc:NSWindow.-contentViewController"
+
+private foreign handler NSWindowGetWindowController(in pNSWindow as ObjcId) returns ObjcId binds to "objc:NSWindow.-windowController"
+-------------------------------------------------------------- NSWindowController ------------------------------------------------------------------------------
+private foreign handler NSWindowControllerAlloc() returns ObjcRetainedId binds to "objc:NSWindowController.+alloc"
+private foreign handler NSWindowControllerDealloc(in pNSWindowController as ObjcId) returns nothing binds to "objc:NSWindowController.-dealloc"
+private foreign handler NSWindowControllerInitWithWindow(in pNSWindowController as ObjcRetainedId,in pNSWindow as ObjcRetainedId) returns ObjcId binds to "objc:NSWindowController.-initWithWindow:"
+--private foreign handler NSWindowControllerInitWithWindow(in pObj as ObjcId,in pNSWindow as ObjcId) returns ObjcId binds to "objc:NSWindowController.-initWithWindow:"
+private foreign handler NSWindowControllerShowWindow(in pNSWindowController as ObjcId,in pNSWindow as ObjcId) returns nothing binds to "objc:NSWindowController.-showWindow:"
+private foreign handler NSWindowControllerClose(in pNSWindowController as ObjcId) returns nothing binds to "objc:NSWindowController.-close"
+
+-------------------------------------------------------------- NSView ------------------------------------------------------------------------------
+private foreign handler NSViewControllerAlloc() returns ObjcRetainedId binds to "objc:NSViewController.+alloc"
+private foreign handler NSViewControllerDealloc(in pNSViewController as ObjcId) returns nothing binds to "objc:NSViewController.-dealloc"
+-------------------------------------------------------------------------------------------  Apple EffectView Bindings ----------------------------------------------------------------------------------------
+private foreign handler NSAppearanceNewAppearanceNamed(in pNSStringAppearanceName as ObjcId) returns ObjcId binds to "objc:NSAppearance.+appearanceNamed:"
+private foreign handler AppleNSEffectViewAlloc() returns ObjcId binds to "objc:NSVisualEffectView.+alloc"
+private foreign handler AppleEffectViewNSVisualEffectViewInit(in pNSVisualEffectView as ObjcRetainedId) returns ObjcRetainedId binds to "objc:NSVisualEffectView.-init"
+-- private foreign handler AppleEffectViewPDFSetDocument(in pNSVisualEffectView as ObjcId, in pPDFDocument as ObjcId) returns nothing binds to "objc:objc:NSVisualEffectView.-document:"
+private foreign handler NSVisualEffectViewSetValueForKey(in pPDFDocument as ObjcId, in pValue as ObjcId, in pSelector as ObjcId) returns nothing binds to "objc:NSVisualEffectView.-setValue:forKey:"
+private foreign handler NSVisualEffectViewSetBoolValueForKey(in pPDFDocument as ObjcId, in pValue as CBool, in pSelector as ObjcId) returns nothing binds to "objc:NSVisualEffectView.-setValue:forKey:"
+private foreign handler NSVisualEffectViewValueForKey(in pPDFDocument as ObjcId, in pSelector as ObjcId) returns ObjcId binds to "objc:NSVisualEffectView.-valueForKey:"
+
+------------------------------------------ General Objtive C Cocoa / Foundation Bindings ------------------------------------------------------------------------------
+private foreign handler NSObjectRetain(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.-retain"
+private foreign handler NSObjectAutoRealease(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.-autorelease"
+private foreign handler NSObjectRelease(in pNSObj as ObjcId) returns nothing binds to "objc:NSObject.-release"
+private foreign handler NSObjectDescription(in pNSObj as optional ObjcId) returns ObjcId binds to "objc:NSObject.description"
+private foreign handler NSObjectClassName(in pNSObj as ObjcId) returns ObjcId binds to "objc:NSObject.className"
+private foreign handler NSObjectGetSuperClass(in pNSObj as ObjcId) returns ObjcRetainedId binds to "c:NObject.+superclass:"
+private foreign handler c_NSClassFromString(in pClassNameString as ObjcId) returns ObjcId binds to "c:NSClassFromString"
+private foreign handler NSErrorAlloc() returns ObjcId binds to "objc:NSError.+alloc"
+private foreign handler c_CFErrorCopyDescription(in pCFErrorRef as ObjcId) returns ObjcId binds to "c:CFErrorCopyDescription"
+
+
+private handler NSWindowFromWindowID(in windowID as Integer) returns ObjcId
+	variable NSSharedApplication as ObjcId
+	variable tNSWindow as ObjcId
+	unsafe
+	put NSApplicationSharedApplication() into NSSharedApplication
+	put NSApplicationWindowWithWindowNumber(NSSharedApplication, windowID) into tNSWindow
+	end unsafe
+	return tNSWindow
+end handler
+
 
 private variable mNSVisualEffectViewVisiblePageChangedCallbackBlkPtr as optional ObjcBlockPointer
 private handler NSVisualEffectViewVisiblePageChangedCallback(in pBlock as optional ObjcBlockPointer, in pNotification as optional ObjcId)
@@ -220,29 +299,24 @@ public handler getDefaultNotificationCenterAndAddObserverNSVisualEffectViewPageC
    put the result into sTarget
 
    unsafe
-      put ObjC_NSNotificationCenter() into tNSNotificationCenter
-      put objC_NSObjectClassName(tNSNotificationCenter) into tNSObj
+      put NSNotificationCenter() into tNSNotificationCenter
+      put NSObjectClassName(tNSNotificationCenter) into tNSObj
       put StringFromNSString(tNSObj) into tStr
       log tStr
       -- put ObjcProxyGetTarget(NSVisualEffectViewCallback, nothing) into mNSVisualEffectViewProxy
       -- NSNotificationCenter.addObserver:selector:name:object
-      -- ObjC_NSNotificationCenterAddObserverForSelector( tNSNotificationCenter, mNSVisualEffectViewProxy, StringToNSString("NSWindowDidBecomeMainNotification"), nothing, nothing )
+      -- NSNotificationCenterAddObserverForSelector( tNSNotificationCenter, mNSVisualEffectViewProxy, StringToNSString("NSWindowDidBecomeMainNotification"), nothing, nothing )
       NSVisualEffectViewInitCallbacks()
-      -- ObjC_NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewVisiblePageChangedCallbackBlkPtr )
-      -- ObjC_NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewPageChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewPageChangedCallbackBlkPtr )
-      ObjC_NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewSomething"), mNSVisualEffectView, nothing, mNSVisualEffectViewPageChangedCallbackBlkPtr )
+      -- NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewVisiblePageChangedCallbackBlkPtr )
+      -- NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewPageChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewPageChangedCallbackBlkPtr )
+      NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewSomething"), mNSVisualEffectView, nothing, mNSVisualEffectViewPageChangedCallbackBlkPtr )
 
-      -- ObjC_NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewVisiblePagesChanged"), nothing, nothing, mNSVisualEffectViewProxyBlockPtr )
-      -- ObjC_NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewVisiblePagesChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewProxyBlockPtr )
-      -- NSVisualEffectViewAnnotationHit	= Posted when the user clicks on an annotation.
-      -- NSVisualEffectViewAnnotationWillHit = Posted before the user clicks an annotation.
-      -- NSVisualEffectViewChangedHistory = Posted when the page history changes.
+      -- NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewVisiblePagesChanged"), nothing, nothing, mNSVisualEffectViewProxyBlockPtr )
+      -- NSNotificationCenterAddObserverForNameUsingBlock(tNSNotificationCenter, StringToNSString("NSVisualEffectViewVisiblePagesChanged"), mNSVisualEffectView, nothing, mNSVisualEffectViewProxyBlockPtr )
       -- NSVisualEffectViewCopyPermission	 = Posted when the user attempts to copy to the pasteboard without the appropriate permissions.
       -- NSVisualEffectViewDisplayBoxChanged	 = Posted when the display box has changed.
       -- NSVisualEffectViewDisplayModeChanged	 = Posted when the display mode has changed.
       -- NSVisualEffectViewDocumentChanged	 = Posted when a new document is associated with the view.
-      -- NSVisualEffectViewPageChanged	 = Posted when a new page becomes the current page.
-      -- NSVisualEffectViewVisiblePagesChanged	= Posted when a new page becomes the current visible page (NEWER than NSVisualEffectViewPageChanged ?)
       -- NSVisualEffectViewPrintPermission	 = Posted when the user attempts to print without the appropriate permissions.
       -- NSVisualEffectViewScaleChanged	 = Posted when the scale factor changes.
       -- NSVisualEffectViewSelectionChanged	 = Posted when the current selection has changed.
@@ -270,24 +344,23 @@ public handler NSVisualEffectViewMakeNSVisualEffectViewWindow(in pPathToPDFStr a
       -- variable tIsDir as optional CBool
       -- put false into tIsDir
       unsafe
-         -- put objC_AppleNSEffectViewAlloc
-         put objC_AppleNSEffectViewAlloc() into mNSVisualEffectView
-         objC_AppleEffectViewNSVisualEffectViewInit(mNSVisualEffectView)
-         -- put objC_NSURLfileURLWithPath(StringToNSString(pPathToPDFStr)) into tFileNSURL
-         --put objC_AppleEffectViewPDFDocumentAlloc() into mPDFDocument
-         -- put objC_AppleEffectViewPDFDocumentInitFromURL(mPDFDocument,tFileNSURL) into mPDFDocument
-         -- objC_AppleEffectViewPDFSetDocument(mNSVisualEffectView,mPDFDocument)
-         -- objC_AppleEffectViewNSVisualEffectViewSetValueForKey(mNSVisualEffectView,mPDFDocument,StringToNSString("document"))
-         -- objC_AppleEffectViewNSVisualEffectViewSetBoolValueForKey(mNSVisualEffectView,true,StringToNSString("autoScales"))
+         put AppleNSEffectViewAlloc() into mNSVisualEffectView
+         AppleEffectViewNSVisualEffectViewInit(mNSVisualEffectView)
+         -- put NSURLfileURLWithPath(StringToNSString(pPathToPDFStr)) into tFileNSURL
+         --put AppleEffectViewPDFDocumentAlloc() into mPDFDocument
+         -- put AppleEffectViewPDFDocumentInitFromURL(mPDFDocument,tFileNSURL) into mPDFDocument
+         -- AppleEffectViewPDFSetDocument(mNSVisualEffectView,mPDFDocument)
+         -- AppleEffectViewNSVisualEffectViewSetValueForKey(mNSVisualEffectView,mPDFDocument,StringToNSString("document"))
+         -- AppleEffectViewNSVisualEffectViewSetBoolValueForKey(mNSVisualEffectView,true,StringToNSString("autoScales"))
          -- LogNSObjectClassName(tFileNSURL)
          --LogNSObjectClassName(mNSVisualEffectView)
          --LogNSObjectClassName(mPDFDocument)
-         --put objC_AppleEffectViewPDFDocumentGetPageCount(mPDFDocument) into tNSNumber
-         --put objC_AppleEffectViewPDFDocumentValueForKey(mPDFDocument,StringToNSString("pageCount")) into tNSObj
+         --put AppleEffectViewPDFDocumentGetPageCount(mPDFDocument) into tNSNumber
+         --put AppleEffectViewPDFDocumentValueForKey(mPDFDocument,StringToNSString("pageCount")) into tNSObj
          --log tNSObj
          --put NumberFromNSNumber(tNSObj) into tNumber
          --log ["PageCount",tNumber]
-         --put objC_AppleEffectViewPDFDocumentValueForKey(mPDFDocument,StringToNSString("string")) into tNSObj
+         --put AppleEffectViewPDFDocumentValueForKey(mPDFDocument,StringToNSString("string")) into tNSObj
          --put StringFromNSString(tNSObj) into tString
          --log tString
       end unsafe
@@ -315,30 +388,132 @@ public handler NSVisualEffectViewMakeNSVisualEffectViewWindow(in pPathToPDFStr a
 
    -- put 1 shifted left by 0 bitwise into tStyleMask -- titlebar only
    -- put 23 into tStyleMask -- <- Titled is 1 + Closable is 2 + Utility is 16 + Miniaturizable is 4 = 23
-   put 11 into tStyleMask -- <- Titled is 1 + Closable is 2 + Resizable is 8
+   put 11 + 4096 + 256 + 32768 into tStyleMask -- <- Titled is 1 + Closable is 2 + Resizable is 8
    -- put 64+8 into tStyleMask
    unsafe
       put [640,640,500,500] into tNSRect
-      put ObjC_NSWindowAlloc() into sMyWindow
-      put ObjC_NSWindowInitWithRectStyleBackingDefer(sMyWindow,tNSRect,tStyleMask,2,true) into sMyWindow
+      put NSWindowAlloc() into sMyWindow
+      put NSWindowInitWithRectStyleBackingDefer(sMyWindow,tNSRect,tStyleMask,2,true) into sMyWindow
      -- log sMyWindow
-      ObjC_NSWindowSetTitle(sMyWindow,StringToNSString(pPathToPDFStr))
-      ObjC_NSWindowSetBoolValueForKey(sMyWindow,true,StringToNSString("titlebarAppearsTransparent")) --- add this and other NSWindow properties to lcb_MacTools
+      NSWindowSetTitle(sMyWindow,StringToNSString(pPathToPDFStr))
+      NSWindowSetBoolValueForKey(sMyWindow,true,StringToNSString("titlebarAppearsTransparent")) --- add this and other NSWindow properties to lcb_MacTools
       ---
       -------------------------------------------------------------
-      put ObjC_NSWindowControllerAlloc() into sMyWindowController
-      put ObjC_NSWindowControllerInitWithWindow(sMyWindowController,sMyWindow) into sMyWindowController
-      ObjC_NSWindowControllerShowWindow(sMyWindowController,sMyWindow)
-      -- ObjC_NSWindowSetValueForKey(sMyWindow,mNSVisualEffectView,StringToNSString("contentView"))
-      ObjC_NSWindowSetContentView(sMyWindow, mNSVisualEffectView)
-      -- ObjC_NSWindowSetContentViewController(sMyWindow, mNSVisualEffectView)
+      put NSWindowControllerAlloc() into sMyWindowController
+      put NSWindowControllerInitWithWindow(sMyWindowController,sMyWindow) into sMyWindowController
+      NSWindowControllerShowWindow(sMyWindowController,sMyWindow)
+      -- NSWindowSetValueForKey(sMyWindow,mNSVisualEffectView,StringToNSString("contentView"))
+      NSWindowSetContentView(sMyWindow, mNSVisualEffectView)
+      -- NSWindowSetContentViewController(sMyWindow, mNSVisualEffectView)
     end unsafe
 end handler
+
+/**
+Assign the macOS native "dark mode" window style to a stack's window
+
+Example:
+setWindowToDarkMode the windowID of this stack
+
+Parameters:
+windowID (integer): retrieved from a stack's windowID property.
+
+Description:
+This handler will set the macOS dark appearance of the window passed.
+*/
+private variable mNSAppearance as optional ObjcObject
+public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMask as optional Integer) returns nothing
+	if (the operating system is "mac") then
+		variable tNSWindow as optional ObjcId
+      variable tNSWindowController as optional ObjcId
+      variable tNSWindowContentViewController as optional ObjcId
+      variable tNSAppearance as optional ObjcId
+
+		unsafe
+			put NSWindowFromWindowID(pWindowID) into tNSWindow
+         -- log tNSWindow
+         ------------------------------------------------------------------- It seems thst LiveCode stack windows on macOS are  customized class of NSWindow
+         -- LogNSObjectClassName(tNSWindow) -- logs the class name as "com_runrev_livecode_MCWindow"
+         -- put NSWindowGetWindowController(tNSWindow) into tNSWindowController
+         -- log tNSWindowController --- logs null, so apparently the stack window class "com_runrev_livecode_MCWindow" has no NSWindowController assigned to it.
+         -- put NSWindowGetContentViewController(tNSWindow) into tNSWindowContentViewController
+         -- log tNSWindowContentViewController --- logs null, so apparently the stack window class "com_runrev_livecode_MCWindow" has no tNSWindowContentViewController assigned to it.
+
+         --------- create an NSWindowController and attaches it to the Stack Window:
+         -- put NSWindowControllerAlloc() into tNSWindowContentViewController
+         -- put NSWindowControllerInitWithWindow(tNSWindowContentViewController,tNSWindow) into tNSWindowContentViewController
+         -- log tNSWindowContentViewController
+         -- LogNSObjectClassName(tNSWindowContentViewController)
+         ------------------------------------------------------------------ Do The DarkMode ------------------------------------------------------
+         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantDark") ) into mNSAppearance
+         ------------------------------------------------------------------ Appearance Names: ------------------------------------------------------
+         -- NSAppearanceNameAqua - The standard light system appearance.
+         -- NSAppearanceNameDarkAqua - The standard dark system appearance.
+         -- NSAppearanceNameVibrantLight - The light vibrant appearance, available only in visual effect views.
+         -- NSAppearanceNameVibrantDark - A dark vibrant appearance, available only in visual effect views.
+         -- NSAppearanceNameAccessibilityHighContrastAqua - A high-contrast version of the standard light system appearance.
+         -- NSAppearanceNameAccessibilityHighContrastDarkAqua - A high-contrast version of the standard dark system appearance.
+         -- NSAppearanceNameAccessibilityHighContrastVibrantLight - A high-contrast version of the light vibrant appearance.
+         -- NSAppearanceNameAccessibilityHighContrastVibrantDark - A high-contrast version of the dark vibrant appearance.
+         -- Deprecated Names:x
+         -- NSAppearanceNameLightContent - The standard appearance that can be used by controls in light content areas (not including window-frame areas).
+
+         -- LogNSObjectClassName(tNSAppearance)
+         NSWindowSetAppearance(tNSWindow,mNSAppearance)
+         -- Borderless = 0
+         -- Titled = 1 LCS 'Decoration' = "title"
+         -- Closable = 2 LCS 'Decoration' = "close"
+         -- Miniaturizable = 4 LCS 'Decoration' =" minimize"
+         -- Resizable = 8 -- LCS equivelant is stack "resizable" property
+         -- Utility = 16
+         -- DocModal = 64
+         -- NonactivatingPanel = 128
+         -- TexturedBackground = 256 (deprecated as of macOS 10.10)
+         -- Unscaled = 2048
+         -- UnifiedTitleAndToolbar = 4096
+         -- Hud = 8192
+         -- CanFullScreenWindow = 16384 LCS 'maximize' ="
+         -- FullSizeContentView = 32768 --
+         if pStyleMask is nothing then
+            put ( 11 + 4096 + 32768 ) into pStyleMask -- UnifiedTitleAndToolbar, FullSizeContentView
+         end if
+         NSWindowSetStyleMask(tNSWindow,pStyleMask)
+         NSWindowSetBoolValueForKey(tNSWindow,true,StringToNSString("titlebarAppearsTransparent"))
+         --NSWindowSetTitleVisibility(tNSWindow,NumberToNSNumber(1)) --- 1 = TitleBar hidden, 0 = TitleBar Visible
+         -- window?.appearance
+		end unsafe
+	end if
+end handler
+
+
+/**
+Assign the macOS native "light mode" window style to a stack's window
+
+Example:
+setWindowToLightMode the windowID of this stack
+
+Parameters:
+windowID (integer): retrieved from a stack's windowID property.
+
+Description:
+This handler will set the macOS "light" appearance of the window passed.
+*/
+public handler setWindowToLightModeithStyle(in pWindowID as Integer, in pStyleMask as Integer) returns nothing
+	if (the operating system is "mac") then
+		variable tNSWindow as optional ObjcId
+		unsafe
+			put NSWindowFromWindowID(pWindowID) into tNSWindow
+         ------------------------------------------------------------------ Do The LightMode ------------------------------------------------------
+         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantLight") ) into mNSAppearance
+         NSWindowSetAppearance(tNSWindow,mNSAppearance)
+		end unsafe
+	end if
+end handler
+
 
 public handler CloseWindow()
    unsafe
       if sMyWindowController is not nothing then
-         objC_NSWindowControllerClose(sMyWindowController)
+         NSWindowControllerClose(sMyWindowController)
       end if
    end unsafe
 end handler
@@ -368,8 +543,8 @@ public unsafe handler LCImageToNSImage(in pImage as String) returns optional Obj
 		if tFile is empty then
 			variable tData as Data
 			put property "text" of tObject into tData
-			put ObjC_NSImageAlloc() into tNSImage
-			put ObjC_NSImageInitWithData(tNSImage, DataToNSData(tData)) into tNSImage
+			put NSImageAlloc() into tNSImage
+			put NSImageInitWithData(tNSImage, DataToNSData(tData)) into tNSImage
 		else
 			resolve file tFile relative to tObject
 			if the result is not nothing then
@@ -384,8 +559,8 @@ public unsafe handler LCImageToNSImage(in pImage as String) returns optional Obj
 	end if
 
 	if tFile is not empty then
-		put ObjC_NSImageAlloc() into tNSImage
-		put ObjC_NSImageInitWithContentsOfFile(tNSImage, StringToNSString(tFile)) into tNSImage
+		put NSImageAlloc() into tNSImage
+		put NSImageInitWithContentsOfFile(tNSImage, StringToNSString(tFile)) into tNSImage
 	end if
    LogNSObjectClassName(tNSImage)
    log tNSImage

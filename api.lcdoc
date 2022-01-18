@@ -1,0 +1,47 @@
+Library: 
+
+Type: 
+
+version: 0.0.5
+
+author: Paul McClernan
+
+
+Name: setWindowToLightModeithStyle
+
+Type: handler
+
+Syntax: setWindowToLightModeithStyle(<pWindowID>,<pStyleMask>)
+
+Summary: Assign the macOS native "light mode" window style to a stack's window
+
+Example: setWindowToLightMode the windowID of this stack
+
+Parameters: 
+
+windowID: retrieved from a stack's windowID property.
+
+Description: This handler will set the macOS "light" appearance of the window passed.
+
+
+
+
+Name: setWindowToDarkModeWithStyle
+
+Type: handler
+
+Syntax: setWindowToDarkModeWithStyle(<pWindowID>,<pStyleMask>)
+
+Summary: Assign the macOS native "dark mode" window style to a stack's window
+
+Example: setWindowToDarkMode the windowID of this stack
+
+Parameters: 
+
+windowID: retrieved from a stack's windowID property.
+
+Description: This handler will set the macOS dark appearance of the window passed.
+
+
+
+
