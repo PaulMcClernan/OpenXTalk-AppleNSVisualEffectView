@@ -411,6 +411,7 @@ public handler NSVisualEffectViewMakeNSVisualEffectViewWindow(in pPathToPDFStr a
          NSWindowSetContentView(sMyWindow, mNSVisualEffectView)
          -- NSWindowSetContentViewController(sMyWindow, mNSVisualEffectView)
        end unsafe
+    end if
 end handler
 
 /**
@@ -436,7 +437,7 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
 		unsafe
 			put NSWindowFromWindowID(pWindowID) into tNSWindow
          -- log tNSWindow
-         ------------------------------------------------------------------- It seems thst LiveCode stack windows on macOS are  customized class of NSWindow
+         ------------------------------------------------------------------- It seems thst LiveCode stack windows on macOS are customized subclass of NSWindow
          -- LogNSObjectClassName(tNSWindow) -- logs the class name as "com_runrev_livecode_MCWindow"
          -- put NSWindowGetWindowController(tNSWindow) into tNSWindowController
          -- log tNSWindowController --- logs null, so apparently the stack window class "com_runrev_livecode_MCWindow" has no NSWindowController assigned to it.
@@ -449,7 +450,9 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
          -- log tNSWindowContentViewController
          -- LogNSObjectClassName(tNSWindowContentViewController)
          ------------------------------------------------------------------ Do The DarkMode ------------------------------------------------------
-         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantDark") ) into mNSAppearance
+         -- put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantDark") ) into mNSAppearance
+         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameAccessibilityHighContrastVibrantDark") ) into mNSAppearance
+
          ------------------------------------------------------------------ Appearance Names: ------------------------------------------------------
          -- NSAppearanceNameAqua - The standard light system appearance.
          -- NSAppearanceNameDarkAqua - The standard dark system appearance.
@@ -463,7 +466,10 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
          -- NSAppearanceNameLightContent - The standard appearance that can be used by controls in light content areas (not including window-frame areas).
 
          -- LogNSObjectClassName(tNSAppearance)
+         put AppleNSEffectViewAlloc() into mNSVisualEffectView
+         AppleEffectViewNSVisualEffectViewInit(mNSVisualEffectView)
          NSWindowSetAppearance(tNSWindow,mNSAppearance)
+
          -- Borderless = 0
          -- Titled = 1 LCS 'Decoration' = "title"
          -- Closable = 2 LCS 'Decoration' = "close"
@@ -479,13 +485,14 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
          -- CanFullScreenWindow = 16384 LCS 'maximize' ="
          -- FullSizeContentView = 32768 --
          if pStyleMask is nothing then
-            put ( 11 + 4096 + 32768 ) into pStyleMask -- UnifiedTitleAndToolbar, FullSizeContentView
+            put ( 1 + 2 + 4 + 16 + 4096 + 32768 ) into pStyleMask -- UnifiedTitleAndToolbar, FullSizeContentView
          end if
-         NSWindowSetStyleMask(tNSWindow,pStyleMask)
          NSWindowSetBoolValueForKey(tNSWindow,true,StringToNSString("titlebarAppearsTransparent"))
+         NSWindowSetStyleMask(tNSWindow,pStyleMask)
+
          --NSWindowSetTitleVisibility(tNSWindow,NumberToNSNumber(1)) --- 1 = TitleBar hidden, 0 = TitleBar Visible
          -- window?.appearance
-
+         -- NSWindowSetContentView(tNSWindow, mNSVisualEffectView)
 		end unsafe
 	end if
 end handler
