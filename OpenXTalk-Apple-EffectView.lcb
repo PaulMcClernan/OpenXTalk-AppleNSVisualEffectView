@@ -52,9 +52,6 @@ public handler GetNSObjectClassName(in tNSObj as optional ObjcId) returns option
 end handler
 
 
-
-
-
 -------------------- Type Declarations -------------------------------
 public foreign type CGSize binds to "MCAggregateTypeInfo:qq"
 public foreign type NSRect binds to "MCAggregateTypeInfo:qqqq"
@@ -68,9 +65,6 @@ private variable mNSVisualEffectView as optional ObjcObject
 private variable mDocument as optional ObjcObject
 private variable mNSVisualEffectViewProxy as optional ObjcObject
 private variable sNSVisualEffectViewController as optional ObjcObject
-
-
-
 
 ------- foreign handlers ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -158,7 +152,8 @@ private foreign handler NSWindowAlloc() returns ObjcRetainedId binds to "objc:NS
 private foreign handler NSWindowDealloc(in pNSWindow as ObjcId) returns nothing binds to "objc:NSWindow.-dealloc"
 private foreign handler NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) \
                                                        returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
---private foreign handler NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
+--private foreign handler NSWindowInitWithRectStyleBackingDefer(in pObj as ObjcRetainedId, in pRect as NSRect, in pStyleMask as CLong, in pBackingStoreType as CLong, in pDefer as CBool) \
+                        -- returns ObjcId binds to "objc:NSWindow.-initWithContentRect:styleMask:backing:defer:"
 private foreign handler NSWindowGetReleasedWhenClosed(in pNSWindow as ObjcId) returns CBool binds to "objc:NSWindow.isReleasedWhenClosed"
 
 private foreign handler NSWindowSetTitle(in pNSWindow as ObjcId, in pTitleNSStr as ObjcId) returns nothing binds to "objc:NSWindow.-setTitle:"
@@ -334,6 +329,7 @@ public handler NSVisualEffectViewMakeNSVisualEffectViewWindow(in pPathToPDFStr a
    variable tNSObj as optional ObjcId
    variable tString as String
    variable tNumber as Integer
+   variable tBackingStore as CLong
    variable tNSSharedApplication as ObjcId
    variable tNSRect as NSRect
    variable tWindow as optional ObjcObject
@@ -363,49 +359,58 @@ public handler NSVisualEffectViewMakeNSVisualEffectViewWindow(in pPathToPDFStr a
          --put AppleEffectViewPDFDocumentValueForKey(mPDFDocument,StringToNSString("string")) into tNSObj
          --put StringFromNSString(tNSObj) into tString
          --log tString
-      end unsafe
-   end if
-   -- if pWindowH is nothing then
-   -- put 200 into pWindowH
-   --end if
-   --if pWindowW is nothing then
-   --   put 200 into pWindowW
-   --end if
-   -- Borderless = 0
-   -- Titled = 1
-   -- Closable = 2
-   -- Miniaturizable = 4
-   -- Resizable = 8
-   -- Utility = 16
-   -- DocModal = 64
-   -- NonactivatingPanel = 128
-   -- TexturedBackground = 256
-   -- Unscaled = 2048
-   -- UnifiedTitleAndToolbar = 4096
-   -- Hud = 8192
-   -- FullScreenWindow = 16384
-   -- FullSizeContentView = 32768
 
-   -- put 1 shifted left by 0 bitwise into tStyleMask -- titlebar only
-   -- put 23 into tStyleMask -- <- Titled is 1 + Closable is 2 + Utility is 16 + Miniaturizable is 4 = 23
-   put 11 + 4096 + 256 + 32768 into tStyleMask -- <- Titled is 1 + Closable is 2 + Resizable is 8
-   -- put 64+8 into tStyleMask
-   unsafe
-      put [640,640,500,500] into tNSRect
-      put NSWindowAlloc() into sMyWindow
-      put NSWindowInitWithRectStyleBackingDefer(sMyWindow,tNSRect,tStyleMask,2,true) into sMyWindow
-     -- log sMyWindow
-      NSWindowSetTitle(sMyWindow,StringToNSString(pPathToPDFStr))
-      NSWindowSetBoolValueForKey(sMyWindow,true,StringToNSString("titlebarAppearsTransparent")) --- add this and other NSWindow properties to lcb_MacTools
-      ---
-      -------------------------------------------------------------
-      put NSWindowControllerAlloc() into sMyWindowController
-      put NSWindowControllerInitWithWindow(sMyWindowController,sMyWindow) into sMyWindowController
-      NSWindowControllerShowWindow(sMyWindowController,sMyWindow)
-      -- NSWindowSetValueForKey(sMyWindow,mNSVisualEffectView,StringToNSString("contentView"))
-      NSWindowSetContentView(sMyWindow, mNSVisualEffectView)
-      -- NSWindowSetContentViewController(sMyWindow, mNSVisualEffectView)
-    end unsafe
+      -- if pWindowH is nothing then
+      -- put 200 into pWindowH
+      --end if
+      --if pWindowW is nothing then
+      --   put 200 into pWindowW
+      --end if
+      ----------------------------------------------------------------------------- style Mask
+      -- Borderless = 0
+      -- Titled = 1
+      -- Closable = 2
+      -- Miniaturizable = 4
+      -- Resizable = 8
+      -- Utility = 16
+      -- DocModal = 64
+      -- NonactivatingPanel = 128
+      -- TexturedBackground = 256
+      -- Unscaled = 2048
+      -- UnifiedTitleAndToolbar = 4096
+      -- Hud = 8192
+      -- FullScreenWindow = 16384
+      -- FullSizeContentView = 32768
+      -- put 1 shifted left by 0 bitwise into tStyleMask -- titlebar only
+      -- put 23 into tStyleMask -- <- Titled is 1 + Closable is 2 + Utility is 16 + Miniaturizable is 4 = 23
+         put 11 + 4096 + 256 + 32768 into tStyleMask -- <- Titled is 1 + Closable is 2 + Resizable is 8
+      -- put 64+8 into tStyleMask
+       ------------------------------------------------------------------------------------------------------- Backing Store Type
+
+         --  put 0 into tBackingStore -- NSBackingStoreType: NSBackingStoreRetained = 0 (Deprecated as of macOS 10.13),
+         --    You should not use this mode. It combines the limitations of NSBackingStoreNonretained with the memory use of NSBackingStoreBuffered.
+         --     The NeXTSTEP implementation was an interesting compromise that worked well with fast memory mapped framebuffers on the CPU bus—
+         --     something that hasn't been in general use since around 1994. These tend to have performance problems.
+         --  put 1 into tBackingStore -- NSBackingStoreType: NSBackingStoreNonretained = 1 (Deprecated as of macOS 10.13)
+         --    You should not use NSBackingStoreNonretained mode. It exists primarily for use in the original Classic Blue Box.
+         --    It does not support Quartz drawing, alpha blending, or opacity, no hardware acceleration,
+         --    and interferes with system-wide display acceleration
+         put 2 into tBackingStore -- NSBackingStoreType: NSBackingStoreBuffered = 2
+         -- You SHOULD use NSBackingStoreBuffered mode. It supports hardware acceleration, Quartz drawing, alpha channels, opacity controls, using the compositor.
+         put [640,640,500,500] into tNSRect
+         put NSWindowAlloc() into sMyWindow
+         put NSWindowInitWithRectStyleBackingDefer(sMyWindow,tNSRect,tStyleMask,tBackingStore,true) into sMyWindow
+        -- log sMyWindow
+         NSWindowSetTitle(sMyWindow,StringToNSString(pPathToPDFStr))
+         NSWindowSetBoolValueForKey(sMyWindow,true,StringToNSString("titlebarAppearsTransparent")) --- add this and other NSWindow properties to lcb_MacTools
+         -------------------------------------------------------------
+         put NSWindowControllerAlloc() into sMyWindowController
+         put NSWindowControllerInitWithWindow(sMyWindowController,sMyWindow) into sMyWindowController
+         NSWindowControllerShowWindow(sMyWindowController,sMyWindow)
+         -- NSWindowSetValueForKey(sMyWindow,mNSVisualEffectView,StringToNSString("contentView"))
+         NSWindowSetContentView(sMyWindow, mNSVisualEffectView)
+         -- NSWindowSetContentViewController(sMyWindow, mNSVisualEffectView)
+       end unsafe
 end handler
 
 /**
@@ -480,6 +485,7 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
          NSWindowSetBoolValueForKey(tNSWindow,true,StringToNSString("titlebarAppearsTransparent"))
          --NSWindowSetTitleVisibility(tNSWindow,NumberToNSNumber(1)) --- 1 = TitleBar hidden, 0 = TitleBar Visible
          -- window?.appearance
+
 		end unsafe
 	end if
 end handler
