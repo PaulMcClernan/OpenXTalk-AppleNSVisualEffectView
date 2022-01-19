@@ -450,8 +450,8 @@ public handler setWindowToDarkModeWithStyle(in pWindowID as Integer, in pStyleMa
          -- log tNSWindowContentViewController
          -- LogNSObjectClassName(tNSWindowContentViewController)
          ------------------------------------------------------------------ Do The DarkMode ------------------------------------------------------
-         -- put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantDark") ) into mNSAppearance
-         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameAccessibilityHighContrastVibrantDark") ) into mNSAppearance
+         put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceNameVibrantDark") ) into mNSAppearance
+         -- put NSAppearanceNewAppearanceNamed( StringToNSString("NSAppearanceName..") ) into mNSAppearance
 
          ------------------------------------------------------------------ Appearance Names: ------------------------------------------------------
          -- NSAppearanceNameAqua - The standard light system appearance.
