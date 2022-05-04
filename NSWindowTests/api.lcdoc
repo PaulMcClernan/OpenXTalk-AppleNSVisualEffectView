@@ -1,0 +1,387 @@
+Library: 
+
+Type: 
+
+author: Trevor DeVore
+
+version: 0.1.0
+
+
+Name: NSWindowHasStyleMasks
+
+Type: handler
+
+Syntax: NSWindowHasStyleMasks(<pWindowId>,<pStyleOptions>)
+
+Summary: Returns whether or not a window has the specified list of styles.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pStyles: Comma-delimited list of styles.
+
+Description: See `NSWindowStyleMasks()` for a list the available styles.
+
+Returns: Boolean
+
+
+
+
+Name: NSWindowSetCollectionBehavior
+
+Type: handler
+
+Syntax: NSWindowSetCollectionBehavior(<pWindowId>,<pBehaviors>)
+
+Summary: Sets the collection behaviors for a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pBehaviors: Comma-delimited list of collection behaviors.
+
+Description: See `NSWindowCollectionBehaviors()` for a list the available collection behaviors.
+
+Returns: nothing
+
+
+
+
+Name: NSWindowSetStyleMask
+
+Type: handler
+
+Syntax: NSWindowSetStyleMask(<pWindowId>,<pStyles>)
+
+Summary: Gets the styles for a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pStyles: Comma-delimited list of styles.
+
+Description: See `NSWindowStyleMasks()` for a list the available collection behaviors.
+
+Returns: Comma-delimited list of collection behaviors
+
+
+
+
+Name: NSWindowStyleMasks
+
+Type: handler
+
+Syntax: NSWindowStyleMasks()
+
+Summary: Returns the list of available styles for a window.
+
+Description: See the following url for a description of the options:
+
+https:
+//developer.apple.com/documentation/appkit/nswindowstylemask?language=objc
+
+* HUD window
+* borderless
+* closable
+* doc modal window
+* full screen
+* full size content view
+* miniaturizable
+* nonactivating modal
+* resizable
+* textured background
+* titled
+* unified title and toolbar
+* utility window
+
+Returns: Comma-delimited list of styles.
+
+
+
+
+Name: NSWindowSetLevel
+
+Type: handler
+
+Syntax: NSWindowSetLevel(<pWindowId>,<pLevel>)
+
+Summary: Sets the level of a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pLevel: The level description (e.g. "screen saver").
+
+Description: See `NSWindowLevels()` for list of levels.
+
+Returns: nothing
+
+
+
+
+Name: NSWindowGetCollectionBehavior
+
+Type: handler
+
+Syntax: NSWindowGetCollectionBehavior(<pWindowId>)
+
+Summary: Gets the collection behaviors for a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Description: See `NSWindowCollectionBehaviors()` for a list the available collection behaviors.
+
+Returns: Comma-delimited list of collection behaviors
+
+
+
+
+Name: NSWindowGetInfoForOpenWindows
+
+Type: handler
+
+Syntax: NSWindowGetInfoForOpenWindows(<pWindowIdsToIgnore>)
+
+Summary: 
+
+Parameters: 
+
+pFilename: 
+
+Returns: NSDictionary
+
+
+
+
+Name: NSWindowGetLevel
+
+Type: handler
+
+Syntax: NSWindowGetLevel(<pWindowId>)
+
+Summary: Returns the level of a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Description: See `NSWindowLevels()` for list of levels.
+
+Returns: String representing the window level (e.g. "screen saver").
+
+
+
+
+Name: NSWindowToggleIsFullScreen
+
+Type: handler
+
+Syntax: NSWindowToggleIsFullScreen(<pWindowId>)
+
+Summary: Toggles a window back and forth between the full screen state.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack
+
+Returns: nothing
+
+
+
+
+Name: NSWindowLevels
+
+Type: handler
+
+Syntax: NSWindowLevels()
+
+Summary: Returns the list of available levels for a window.
+
+Description: See the following url for a description of the options:
+
+https:
+//developer.apple.com/documentation/appkit/nswindowlevel?language=objc
+
+* floating
+* main menu
+* panel
+* normal
+* pop-up menu
+* screen saver
+* torn off
+
+Returns: Comma-delimited list of levels.
+
+
+
+
+Name: NSWindowOrderFront
+
+Type: handler
+
+Syntax: NSWindowOrderFront(<pWindowId>)
+
+Summary: Moves the window to the front of the screen list, within its level.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Returns: nothing
+
+
+
+
+Name: NSWindowSetIgnoresMouseEvents
+
+Type: handler
+
+Syntax: NSWindowSetIgnoresMouseEvents(<pWindowId>,<pIgnoreEvents>)
+
+Summary: Set to true to tell the window to ignore mouse events.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pIgnoreEvents: true or false.
+
+Description: When set to true this property will ignore all mouse events.
+
+Returns: nothing
+
+
+
+
+Name: NSWindowGetRepresentedFilename
+
+Type: handler
+
+Syntax: NSWindowGetRepresentedFilename(<pWindowId>)
+
+Summary: Returns the filename associated with a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Returns: String
+
+
+
+
+Name: NSWindowGetIgnoresMouseEvents
+
+Type: handler
+
+Syntax: NSWindowGetIgnoresMouseEvents(<pWindowId>)
+
+Summary: Returns the ignore mouse events setting for the window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Returns: Boolean
+
+
+
+
+Name: NSWindowSetRepresentedFilename
+
+Type: handler
+
+Syntax: NSWindowSetRepresentedFilename(<pWindowId>,<pFilename>)
+
+Summary: Sets the filename associated with a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+pFilename: 
+
+Description:
+Setting the filename of a window will display the icon of that filename in the title
+bar. Command + clicking on the title bar title will display the path to the file in a
+menu.
+
+Returns: nothing
+
+
+
+
+Name: NSWindowGetStyleMask
+
+Type: handler
+
+Syntax: NSWindowGetStyleMask(<pWindowId>)
+
+Summary: Gets the styles for a window.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Description: See `NSWindowStyleMasks()` for a list the available collection behaviors.
+
+Returns: Comma-delimited list of styles
+
+
+
+
+Name: NSWindowCollectionBehaviors
+
+Type: handler
+
+Syntax: NSWindowCollectionBehaviors()
+
+Summary: Returns the list of available collection behaviors for a window.
+
+Description: See the following url for a description of the options:
+
+https:
+//developer.apple.com/documentation/appkit/nswindowcollectionbehavior?language=objc
+
+* default
+* can join all spaces
+* move to active space
+* managed
+* transient
+* stationary
+* participates in cycle
+* ignores cycle
+* full screen primary
+* full screen auxiliary
+* full screen allows tiling
+* full screen disallows tiling
+* full screen none
+
+Returns: Comma-delimited list of collection behaviors.
+
+
+
+
+Name: NSWindowMakeKeyAndOrderFront
+
+Type: handler
+
+Syntax: NSWindowMakeKeyAndOrderFront(<pWindowId>)
+
+Summary: Moves the window to the front of the screen list, within its level, and shows it.
+
+Parameters: 
+
+pWindowId: The `windowId` property of a stack.
+
+Returns: nothing
+
+
+
+

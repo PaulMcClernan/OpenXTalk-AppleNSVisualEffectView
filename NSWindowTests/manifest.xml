@@ -1,0 +1,43 @@
+<package version="0.0">
+  <name>com.livecode.extensions.devore.nswindow</name>
+  <title>NSWindow</title>
+  <author>Trevor DeVore</author>
+  <version>0.1.0</version>
+  <license>community</license>
+  <type>library</type>
+  <requires name="com.livecode.objc"/>
+  <requires name="com.livecode.foreign"/>
+  <requires name="com.livecode.library.scriptitems"/>
+  <requires name="com.livecode.arithmetic"/>
+  <requires name="com.livecode.bitwise"/>
+  <requires name="com.livecode.array"/>
+  <requires name="com.livecode.sort"/>
+  <requires name="com.livecode.typeconvert"/>
+  <requires name="com.livecode.binary"/>
+  <requires name="com.livecode.list"/>
+  <requires name="com.livecode.logic"/>
+  <requires name="com.livecode.string"/>
+  <requires name="com.livecode.type"/>
+  <requires name="com.livecode.engine"/>
+  <requires name="com.livecode.byte"/>
+  <requires name="com.livecode.char"/>
+  <handler name="CreateNSWindow" parameters="in optional number,in optional number" return="optional any"/>
+  <handler name="NSWindowStyleMasks" parameters="" return="string"/>
+  <handler name="NSWindowCollectionBehaviors" parameters="" return="string"/>
+  <handler name="NSWindowLevels" parameters="" return="string"/>
+  <handler name="NSWindowGetStyleMask" parameters="in integer" return="string"/>
+  <handler name="NSWindowSetStyleMask" parameters="in integer,in string" return="nothing"/>
+  <handler name="NSWindowHasStyleMasks" parameters="in integer,in string" return="boolean"/>
+  <handler name="NSWindowToggleIsFullScreen" parameters="in integer" return="any"/>
+  <handler name="NSWindowSetCollectionBehavior" parameters="in integer,in string" return="any"/>
+  <handler name="NSWindowGetCollectionBehavior" parameters="in integer" return="string"/>
+  <handler name="NSWindowSetIgnoresMouseEvents" parameters="in integer,in boolean" return="any"/>
+  <handler name="NSWindowGetIgnoresMouseEvents" parameters="in integer" return="boolean"/>
+  <handler name="NSWindowMakeKeyAndOrderFront" parameters="in integer" return="any"/>
+  <handler name="NSWindowOrderFront" parameters="in integer" return="any"/>
+  <handler name="NSWindowGetRepresentedFilename" parameters="in integer" return="string"/>
+  <handler name="NSWindowSetRepresentedFilename" parameters="in integer,in string" return="any"/>
+  <handler name="NSWindowSetLevel" parameters="in integer,in string" return="any"/>
+  <handler name="NSWindowGetLevel" parameters="in integer" return="string"/>
+  <handler name="NSWindowGetInfoForOpenWindows" parameters="in string" return="list"/>
+</package>

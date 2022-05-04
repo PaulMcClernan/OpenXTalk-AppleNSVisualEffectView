@@ -1,0 +1,43 @@
+import module com.livecode.extensions.devore.nswindow
+  use com.livecode.objc
+  use com.livecode.foreign
+  use com.livecode.library.scriptitems
+  use com.livecode.arithmetic
+  use com.livecode.bitwise
+  use com.livecode.array
+  use com.livecode.sort
+  use com.livecode.typeconvert
+  use com.livecode.binary
+  use com.livecode.list
+  use com.livecode.logic
+  use com.livecode.string
+  use com.livecode.type
+  use com.livecode.engine
+  use com.livecode.byte
+  use com.livecode.char
+  foreign type CGImageRef
+  foreign type CGPoint
+  foreign type CGSize
+  foreign type NSRect
+  variable sMyWindow as ObjcObject
+  variable sMyWindowController as ObjcObject
+  handler CreateNSWindow(in pWindowH as optional Number, in pWindowW as optional Number) returns optional any
+  handler NSWindowStyleMasks() returns String
+  handler NSWindowCollectionBehaviors() returns String
+  handler NSWindowLevels() returns String
+  handler NSWindowGetStyleMask(in pWindowId as Number) returns String
+  handler NSWindowSetStyleMask(in pWindowId as Number, in pStyles as String) returns nothing
+  handler NSWindowHasStyleMasks(in pWindowId as Number, in pStyleOptions as String) returns Boolean
+  handler NSWindowToggleIsFullScreen(in pWindowId as Number) returns optional any
+  handler NSWindowSetCollectionBehavior(in pWindowId as Number, in pBehaviors as String) returns optional any
+  handler NSWindowGetCollectionBehavior(in pWindowId as Number) returns String
+  handler NSWindowSetIgnoresMouseEvents(in pWindowId as Number, in pIgnoreEvents as Boolean) returns optional any
+  handler NSWindowGetIgnoresMouseEvents(in pWindowId as Number) returns Boolean
+  handler NSWindowMakeKeyAndOrderFront(in pWindowId as Number) returns optional any
+  handler NSWindowOrderFront(in pWindowId as Number) returns optional any
+  handler NSWindowGetRepresentedFilename(in pWindowId as Number) returns String
+  handler NSWindowSetRepresentedFilename(in pWindowId as Number, in pBehaviors as String) returns optional any
+  handler NSWindowSetLevel(in pWindowId as Number, in pBehaviors as String) returns optional any
+  handler NSWindowGetLevel(in pWindowId as Number) returns String
+  handler NSWindowGetInfoForOpenWindows(in pWindowIdsToIgnore as String) returns List
+end module
